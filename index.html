@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>Student Engagement Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary-color: #4285f4;
+      --secondary-color: #34a853;
+      --danger-color: #ea4335;
+      --light-gray: #f5f5f5;
+      --medium-gray: #e0e0e0;
+      --dark-gray: #757575;
+      --white: #ffffff;
+      --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f9f9f9;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: var(--box-shadow);
+      position: relative;
+      flex: 1;
+    }
+    
+    /* Centered Popup Message */
+    .message-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .message-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .message-popup {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      max-width: 90%;
+      width: 400px;
+      text-align: center;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    
+    .message-overlay.visible .message-popup {
+      transform: translateY(0);
+    }
+    
+    .message-popup.success {
+      border-top: 5px solid var(--secondary-color);
+    }
+    
+    .message-popup.error {
+      border-top: 5px solid var(--danger-color);
+    }
+    
+    .message-popup h3 {
+      margin-bottom: 15px;
+      color: var(--dark-gray);
+    }
+    
+    .message-popup p {
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    
+    .message-popup .close-btn {
+      padding: 8px 20px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 28px;
+    }
+    
+    h2 {
+      color: var(--primary-color);
+      margin: 20px 0 15px;
+      font-size: 22px;
+    }
+    
+    h3, h4 {
+      color: var(--dark-gray);
+      margin: 15px 0 10px;
+    }
+    
+    .form-section {
+      border: 1px solid var(--medium-gray);
+      padding: 25px;
+      margin-bottom: 25px;
+      border-radius: 6px;
+      background-color: var(--white);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--dark-gray);
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    .searchable-dropdown-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--medium-gray);
+      border-radius: 4px;
+      font-size: 16px;
+      transition: border 0.3s;
+      font-family: inherit;
+    }
+    
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    .searchable-dropdown-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+    }
+    
+    .checkbox-group {
+      margin: 15px 0;
+    }
+    
+    .checkbox-option {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .checkbox-option input {
+      margin-right: 10px;
+    }
+    
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .student-entry {
+      border: 1px solid var(--medium-gray);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      background-color: var(--light-gray);
+      position: relative;
+    }
+    
+    .student-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .remove-student-btn {
+      background-color: var(--danger-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    
+    .remove-student-btn:hover {
+      background-color: #c5221f;
+    }
+    
+    hr {
+      border: none;
+      border-top: 1px solid var(--medium-gray);
+      margin: 20px 0;
+    }
+    
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .file-upload-container {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px dashed var(--medium-gray);
+      border-radius: 4px;
+      background-color: var(--light-gray);
+    }
+    
+    .file-preview {
+      margin-top: 10px;
+    }
+    
+    .file-preview-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    
+    .file-preview-name {
+      margin-left: 8px;
+      font-size: 14px;
+    }
+    
+    .remove-file-btn {
+      color: var(--danger-color);
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    /* Searchable Dropdown Styles */
+    .searchable-dropdown {
+      position: relative;
+      width: 100%;
+    }
+
+    .searchable-dropdown-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--medium-gray);
+      border-radius: 4px;
+      font-size: 16px;
+      font-family: inherit;
+      color: #333;
+      background-color: var(--white);
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    .searchable-dropdown-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: var(--white);
+      border: 1px solid var(--medium-gray);
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      box-shadow: var(--box-shadow);
+      z-index: 100;
+      display: none;
+      margin-top: -1px;
+    }
+
+    .searchable-dropdown-option {
+      padding: 10px 15px;
+      cursor: pointer;
+      color: var(--dark-gray);
+      transition: background-color 0.2s;
+      font-size: 15px;
+    }
+
+    .searchable-dropdown-option:hover {
+      background-color: var(--light-gray);
+    }
+
+    .searchable-dropdown-option.selected {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .searchable-dropdown-option.no-results {
+      cursor: default;
+      color: var(--dark-gray);
+      font-style: italic;
+    }
+
+    /* Make sure the hidden select is properly hidden */
+    #userName {
+      display: none !important;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .form-section {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      h2 {
+        font-size: 20px;
+      }
+      
+      input[type="text"],
+      input[type="number"],
+      input[type="date"],
+      select,
+      .searchable-dropdown-input {
+        padding: 10px;
+      }
+      
+      .message-popup {
+        padding: 20px;
+        width: 90%;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .form-section {
+        padding: 10px;
+      }
+      
+      .student-entry {
+        padding: 15px;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .action-buttons button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      
+      .message-popup {
+        padding: 15px;
+      }
+      
+      .message-popup h3 {
+        font-size: 18px;
+      }
+      
+      .message-popup p {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Student Engagement Form</h1>
+    
+    <!-- Centered Popup Message -->
+    <div id="messageOverlay" class="message-overlay">
+      <div id="messagePopup" class="message-popup">
+        <h3 id="messageTitle">Message</h3>
+        <p id="messageText"></p>
+        <button class="close-btn" onclick="hideMessage()">OK</button>
+      </div>
+    </div>
+    
+    <div class="form-section">
+      <div class="form-group">
+        <label for="userNameSearch">Select Your Name:</label>
+        <div class="searchable-dropdown">
+          <input type="text" 
+                 id="userNameSearch" 
+                 class="searchable-dropdown-input"
+                 placeholder="Type to search names..." 
+                 autocomplete="off">
+          <select id="userName" required>
+            <option value="">-- Select Your Name --</option>
+          </select>
+          <div class="searchable-dropdown-options" id="userNameOptions"></div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Select Form Type:</label>
+        <div class="checkbox-group">
+          <div class="checkbox-option">
+            <input type="radio" id="formTypeCPL" name="formType" value="CPL" checked>
+            <label for="formTypeCPL">CPL</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="radio" id="formTypeCPS" name="formType" value="CPS">
+            <label for="formTypeCPS">CPS</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CPL Form Section -->
+    <div id="cplForm" class="form-section">
+      <h2>CPL Data Entry</h2>
+      
+      <div class="form-group">
+        <label for="otp">OTP:</label>
+        <input type="text" id="otp" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="totalCalls">Total Calls:</label>
+        <input type="number" id="totalCalls" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="studentEngaged">Student Engaged:</label>
+        <input type="number" id="studentEngaged" required>
+      </div>
+      
+      <h3>University Counts:</h3>
+      
+      <div class="form-group">
+        <label for="thapar">Thapar:</label>
+        <input type="number" id="thapar" value="0">
+      </div>
+      
+      <div class="form-group">
+        <label for="thaparArts">Thapar (Arts):</label>
+        <input type="number" id="thaparArts" value="0">
+      </div>
+      
+      <div class="form-group">
+        <label for="lmThapar">LM Thapar:</label>
+        <input type="number" id="lmThapar" value="0">
+      </div>
+      
+      <div class="form-group">
+        <label for="niit">NIIT:</label>
+        <input type="number" id="niit" value="0">
+      </div>
+      
+      <div class="form-group">
+        <label for="velTech">Vel Tech:</label>
+        <input type="number" id="velTech" value="0">
+      </div>
+      
+      <div class="form-group">
+        <label for="alpha">Alpha:</label>
+        <input type="number" id="alpha" value="0">
+      </div>
+      
+      <div class="form-group">
+        <label for="amity">Amity:</label>
+        <input type="number" id="amity" value="0">
+      </div>
+      
+      <div class="form-group">
+        <label for="dsu">DSU:</label>
+        <input type="number" id="dsu" value="0">
+      </div>
+      
+      <div class="form-group">
+        <label for="kl">KL:</label>
+        <input type="number" id="kl" value="0">
+      </div>
+      
+      <div class="form-group">
+        <label for="sikkimManipal">Sikkim Manipal University:</label>
+        <input type="number" id="sikkimManipal" value="0">
+      </div>
+
+      <div class="file-upload-container">
+        <h3>Upload Proof Files</h3>
+        <div class="form-group">
+          <label for="cplScreenshots">Screenshots (Max 5):</label>
+          <input type="file" id="cplScreenshots" multiple accept="image/*,.pdf">
+          <div id="cplScreenshotPreview" class="file-preview"></div>
+        </div>
+      
+        <div class="form-group">
+          <label for="cplExcelReport">Excel Report (Required):</label>
+          <input type="file" id="cplExcelReport" accept=".xlsx,.xls,.csv,.ods">
+          <div id="cplExcelPreview" class="file-preview"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CPS Form Section -->
+    <div id="cpsForm" class="form-section hidden">
+      <h2>CPS Data Entry</h2>
+      
+      <div class="form-group">
+        <label for="totalCallsCPS">Total Calls Made:</label>
+        <input type="number" id="totalCallsCPS" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="totalCallsEngagedCPS">Total Calls Engaged:</label>
+        <input type="number" id="totalCallsEngagedCPS" required>
+      </div>
+
+      <h3>Student Details:</h3>
+      <div id="studentContainer">
+        <!-- Student entries will be added here dynamically -->
+      </div>
+      
+      <button type="button" id="addStudentBtn" class="btn-secondary">+ Add Student</button>
+
+      <div class="file-upload-container">
+        <h3>Upload Proof Files</h3>
+        <div class="form-group">
+          <label for="cpsScreenshots">Screenshots (Max 5):</label>
+          <input type="file" id="cpsScreenshots" multiple accept="image/*,.pdf">
+          <div id="cpsScreenshotPreview" class="file-preview"></div>
+        </div>
+      
+        <div class="form-group">
+          <label for="cpsExcelReport">Excel Report (Required):</label>
+          <input type="file" id="cpsExcelReport" accept=".xlsx,.xls,.csv,.ods">
+          <div id="cpsExcelPreview" class="file-preview"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="action-buttons">
+      <button id="submitBtn" class="btn-primary">Submit Form</button>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load user names from spreadsheet
+      google.script.run.withSuccessHandler(populateUserNames).getUserNames();
+      
+      // Get form type radio buttons
+      const cplRadio = document.getElementById('formTypeCPL');
+      const cpsRadio = document.getElementById('formTypeCPS');
+      
+      // Get form sections
+      const cplForm = document.getElementById('cplForm');
+      const cpsForm = document.getElementById('cpsForm');
+      
+      // Add event listeners to radio buttons
+      cplRadio.addEventListener('change', function() {
+        if (this.checked) {
+          cplForm.classList.remove('hidden');
+          cpsForm.classList.add('hidden');
+        }
+      });
+      
+      cpsRadio.addEventListener('change', function() {
+        if (this.checked) {
+          cplForm.classList.add('hidden');
+          cpsForm.classList.remove('hidden');
+          // Ensure at least one student entry exists
+          if (document.querySelectorAll('.student-entry').length === 0) {
+            addStudentEntry();
+          }
+        }
+      });
+      
+      // Add student button
+      document.getElementById('addStudentBtn').addEventListener('click', addStudentEntry);
+      
+      // Submit button click handler
+      document.getElementById('submitBtn').addEventListener('click', submitForm);
+      
+      // Initialize file uploads
+      initializeFileUploads();
+    });
+    
+    function populateUserNames(names) {
+      const select = document.getElementById('userName');
+      const searchInput = document.getElementById('userNameSearch');
+      const optionsContainer = document.getElementById('userNameOptions');
+      
+      // Clear existing options
+      select.innerHTML = '';
+      optionsContainer.innerHTML = '';
+      
+      // Add default empty option
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = '-- Select Your Name --';
+      select.appendChild(defaultOption);
+      
+      // Store names for filtering
+      let allNames = [];
+      
+      names.forEach(name => {
+        if (name) {
+          // Add to select element (hidden)
+          const option = document.createElement('option');
+          option.value = name;
+          option.textContent = name;
+          select.appendChild(option);
+          
+          // Add to our names array
+          allNames.push(name);
+        }
+      });
+      
+      // Set up search functionality
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const filteredNames = allNames.filter(name => 
+          name.toLowerCase().includes(searchTerm)
+        );
+        
+        renderOptions(filteredNames);
+      });
+      
+      searchInput.addEventListener('focus', function() {
+        renderOptions(allNames);
+      });
+      
+      // Handle clicks outside to close dropdown
+      document.addEventListener('click', function(e) {
+        if (!optionsContainer.contains(e.target) && e.target !== searchInput) {
+          optionsContainer.style.display = 'none';
+        }
+      });
+      
+      // Handle option selection
+      function renderOptions(names) {
+        optionsContainer.innerHTML = '';
+        
+        if (names.length === 0) {
+          const noResults = document.createElement('div');
+          noResults.className = 'searchable-dropdown-option no-results';
+          noResults.textContent = 'No matching names found';
+          optionsContainer.appendChild(noResults);
+        } else {
+          names.forEach(name => {
+            const option = document.createElement('div');
+            option.className = 'searchable-dropdown-option';
+            option.textContent = name;
+            option.addEventListener('click', function() {
+              // Set the value in both the hidden select and the search input
+              select.value = name;
+              searchInput.value = name;
+              optionsContainer.style.display = 'none';
+            });
+            optionsContainer.appendChild(option);
+          });
+        }
+        
+        optionsContainer.style.display = names.length ? 'block' : 'none';
+      }
+      
+      // Initial render of all names
+      renderOptions(allNames);
+    }
+    
+    function addStudentEntry() {
+  const container = document.getElementById('studentContainer');
+  const studentIndex = container.children.length + 1;
+  
+  const studentDiv = document.createElement('div');
+  studentDiv.className = 'student-entry';
+  studentDiv.innerHTML = `
+    <div class="student-header">
+      <h4>Student ${studentIndex}</h4>
+      ${container.children.length > 0 ? 
+        '<button type="button" class="remove-student-btn" data-index="${studentIndex}">×</button>' : 
+        ''}
+    </div>
+    <div class="form-group">
+      <label for="studentName${studentIndex}">Student Name:</label>
+      <input type="text" id="studentName${studentIndex}" >
+    </div>
+    <div class="form-group">
+      <label for="studentMobile${studentIndex}">Student Mobile:</label>
+      <input type="text" id="studentMobile${studentIndex}" >
+    </div>
+    
+    <div class="form-group">
+      <label for="universityName${studentIndex}">University Name:</label>
+      <input type="text" id="universityName${studentIndex}" >
+    </div>
+    
+    <div class="form-group">
+      <label for="visitingDate${studentIndex}">Visiting Date:</label>
+      <input type="date" id="visitingDate${studentIndex}" >
+    </div>
+    
+    <div class="form-group">
+      <label>Registration:</label>
+      <div class="checkbox-group">
+        <div class="checkbox-option">
+          <input type="radio" id="regCompleted${studentIndex}" name="registration${studentIndex}" value="Completed" checked>
+          <label for="regCompleted${studentIndex}">Completed</label>
+        </div>
+        <div class="checkbox-option">
+          <input type="radio" id="regNotCompleted${studentIndex}" name="registration${studentIndex}" value="Not Completed">
+          <label for="regNotCompleted${studentIndex}">Not Completed</label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Application:</label>
+      <div class="checkbox-group">
+        <div class="checkbox-option">
+          <input type="radio" id="appCompleted${studentIndex}" name="application${studentIndex}" value="Completed" checked>
+          <label for="appCompleted${studentIndex}">Completed</label>
+        </div>
+        <div class="checkbox-option">
+          <input type="radio" id="appNotCompleted${studentIndex}" name="application${studentIndex}" value="Not Completed">
+          <label for="appNotCompleted${studentIndex}">Not Completed</label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Admission:</label>
+      <div class="checkbox-group">
+        <div class="checkbox-option">
+          <input type="radio" id="admCompleted${studentIndex}" name="admission${studentIndex}" value="Completed" checked>
+          <label for="admCompleted${studentIndex}">Completed</label>
+        </div>
+        <div class="checkbox-option">
+          <input type="radio" id="admNotCompleted${studentIndex}" name="admission${studentIndex}" value="Not Completed">
+          <label for="admNotCompleted${studentIndex}">Not Completed</label>
+        </div>
+      </div>
+    </div>
+  `;
+  container.appendChild(studentDiv);
+
+  // Remove the auto-fill of today's date (this line is removed)
+  // Previously: document.getElementById(`visitingDate${studentIndex}`).value = today;
+
+  // Add click handler for remove button
+  const removeBtn = studentDiv.querySelector('.remove-student-btn');
+  if (removeBtn) {
+    removeBtn.addEventListener('click', function() {
+      container.removeChild(studentDiv);
+      renumberStudentEntries();
+    });
+  }
+
+  // Scroll to the new entry
+  studentDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+    
+    function renumberStudentEntries() {
+      const container = document.getElementById('studentContainer');
+      const entries = container.querySelectorAll('.student-entry');
+      
+      entries.forEach((entry, index) => {
+        const newIndex = index + 1;
+        entry.querySelector('h4').textContent = `Student ${newIndex}`;
+        
+        // Update all IDs and names in this entry
+        const inputs = entry.querySelectorAll('input, select');
+        inputs.forEach(input => {
+          input.id = input.id.replace(/\d+$/, newIndex);
+          input.name = input.name.replace(/\d+$/, newIndex);
+        });
+        
+        // Update labels
+        const labels = entry.querySelectorAll('label');
+        labels.forEach(label => {
+          if (label.htmlFor) {
+            label.htmlFor = label.htmlFor.replace(/\d+$/, newIndex);
+          }
+        });
+        
+        // Update remove button if it exists
+        const removeBtn = entry.querySelector('.remove-student-btn');
+        if (removeBtn) {
+          removeBtn.dataset.index = newIndex;
+        }
+        
+        // Show remove button only if not the last entry
+        const header = entry.querySelector('.student-header');
+        if (header && entries.length > 1) {
+          if (!header.querySelector('.remove-student-btn')) {
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-student-btn';
+            removeBtn.dataset.index = newIndex;
+            removeBtn.innerHTML = '×';
+            removeBtn.addEventListener('click', function() {
+              container.removeChild(entry);
+              renumberStudentEntries();
+            });
+            header.appendChild(removeBtn);
+          }
+        } else if (header && entries.length === 1) {
+          const removeBtn = header.querySelector('.remove-student-btn');
+          if (removeBtn) {
+            header.removeChild(removeBtn);
+          }
+        }
+      });
+    }
+    
+    function submitForm() {
+      const userName = document.getElementById('userName').value;
+      const isCPL = document.getElementById('formTypeCPL').checked;
+      
+      if (!userName) {
+        showMessage('Error', 'Please select your name', 'error');
+        return;
+      }
+      
+      if (isCPL) {
+        submitCPLForm(userName);
+      } else {
+        submitCPSForm(userName);
+      }
+    }
+    
+    async function submitCPLForm(userName) {
+      showMessage('Processing', 'Submitting your data...', 'info');
+      try {
+        // Validate form data
+        const otp = document.getElementById('otp').value.trim();
+        const totalCalls = document.getElementById('totalCalls').value.trim();
+        const studentEngaged = document.getElementById('studentEngaged').value.trim();
+        
+        if (!otp || !totalCalls || !studentEngaged) {
+          showMessage('Error', 'Please fill all required fields in CPL form', 'error');
+          return;
+        }
+        
+        // Validate files
+        const screenshotFiles = document.getElementById('cplScreenshots').files;
+        const excelFile = document.getElementById('cplExcelReport').files[0];
+        
+        if (!excelFile || screenshotFiles.length === 0) {
+          showMessage('Error', 'Both screenshot and Excel file are required', 'error');
+          return;
+        }
+        
+        if (screenshotFiles.length > 5) {
+          showMessage('Error', 'Maximum 5 screenshots allowed', 'error');
+          return;
+        }
+
+        // Prepare form data
+        const formData = {
+          userName: userName,
+          otp: otp,
+          totalCalls: parseInt(totalCalls),
+          studentEngaged: parseInt(studentEngaged),
+          thapar: parseInt(document.getElementById('thapar').value) || 0,
+          thaparArts: parseInt(document.getElementById('thaparArts').value) || 0,
+          lmThapar: parseInt(document.getElementById('lmThapar').value) || 0,
+          niit: parseInt(document.getElementById('niit').value) || 0,
+          velTech: parseInt(document.getElementById('velTech').value) || 0,
+          alpha: parseInt(document.getElementById('alpha').value) || 0,
+          amity: parseInt(document.getElementById('amity').value) || 0,
+          dsu: parseInt(document.getElementById('dsu').value) || 0,
+          kl: parseInt(document.getElementById('kl').value) || 0,
+          sikkimManipal: parseInt(document.getElementById('sikkimManipal').value) || 0
+        };
+
+        // Convert files
+        const files = {
+          screenshots: await Promise.all([...screenshotFiles].map(fileToBase64)),
+          excel: await fileToBase64(excelFile)
+        };
+
+        // Submit data
+        google.script.run
+      .withSuccessHandler(() => {
+        showMessage('Success', 'CPL data submitted successfully!', 'success');
+        resetCPLForm();
+      })
+      .withFailureHandler((error) => {
+        showMessage('Error', 'Error submitting CPL data: ' + error.message, 'error');
+      })
+      .processCPLForm(formData, files);
+      } catch (error) {
+        showMessage('Error', 'An unexpected error occurred: ' + error.message, 'error');
+      }
+    }
+    
+        
+    function resetCPLForm() {
+      document.getElementById('otp').value = '';
+      document.getElementById('totalCalls').value = '';
+      document.getElementById('studentEngaged').value = '';
+      
+      // Reset all university counts to 0
+      const universityFields = ['thapar', 'thaparArts', 'lmThapar', 'niit', 'velTech', 
+                               'alpha', 'amity', 'dsu', 'kl', 'sikkimManipal'];
+      universityFields.forEach(field => {
+        document.getElementById(field).value = '0';
+      });
+      
+      // Reset file inputs
+      document.getElementById('cplScreenshots').value = '';
+      document.getElementById('cplExcelReport').value = '';
+      document.getElementById('cplScreenshotPreview').innerHTML = '';
+      document.getElementById('cplExcelPreview').innerHTML = '';
+    }
+    
+    function resetCPSForm() {
+      document.getElementById('totalCallsCPS').value = '';
+      document.getElementById('totalCallsEngagedCPS').value = '';
+      
+      // Clear all student entries
+      const container = document.getElementById('studentContainer');
+      container.innerHTML = '';
+      
+      // Reset file inputs
+      document.getElementById('cpsScreenshots').value = '';
+      document.getElementById('cpsExcelReport').value = '';
+      document.getElementById('cpsScreenshotPreview').innerHTML = '';
+      document.getElementById('cpsExcelPreview').innerHTML = '';
+      
+      // Add one fresh student entry
+      addStudentEntry();
+    }
+    
+    function showMessage(title, message, type) {
+      const overlay = document.getElementById('messageOverlay');
+      const popup = document.getElementById('messagePopup');
+      const messageTitle = document.getElementById('messageTitle');
+      const messageText = document.getElementById('messageText');
+      
+      // Set message content
+      messageTitle.textContent = title;
+      messageText.textContent = message;
+      
+      // Set styling based on message type
+      popup.className = 'message-popup ' + type;
+      
+      // Show the overlay
+      overlay.classList.add('visible');
+      
+      // Auto-hide after 5 seconds for success messages
+      if (type === 'success') {
+        setTimeout(hideMessage, 5000);
+      }
+    }
+    
+    function hideMessage() {
+      document.getElementById('messageOverlay').classList.remove('visible');
+    }
+
+
+    function initializeFileUploads() {
+      setupFileUpload('cplScreenshots', 'cplScreenshotPreview');
+      setupFileUpload('cplExcelReport', 'cplExcelPreview');
+      setupFileUpload('cpsScreenshots', 'cpsScreenshotPreview');
+      setupFileUpload('cpsExcelReport', 'cpsExcelPreview');
+    }
+    
+    function setupFileUpload(inputId, previewId) {
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      
+      input.addEventListener('change', function() {
+        preview.innerHTML = '';
+        if (input.files.length > 0) {
+          Array.from(input.files).forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-preview-item';
+            fileItem.innerHTML = `
+              <span>📄</span>
+              <span class="file-preview-name">${file.name}</span>
+              <span class="remove-file-btn" data-index="${index}">✕</span>
+            `;
+            preview.appendChild(fileItem);
+          });
+          
+          // Add remove file handlers
+          preview.querySelectorAll('.remove-file-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const index = parseInt(this.getAttribute('data-index'));
+              removeFileFromInput(input, index);
+              setupFileUpload(inputId, previewId); // Refresh preview
+            });
+          });
+        }
+      });
+    }
+    
+    function removeFileFromInput(input, index) {
+      const files = Array.from(input.files);
+      files.splice(index, 1);
+      
+      // Create new DataTransfer to update files
+      const dataTransfer = new DataTransfer();
+      files.forEach(file => dataTransfer.items.add(file));
+      input.files = dataTransfer.files;
+    }
+    
+    
+    
+    async function submitCPSForm(userName) {
+  // Show loading message immediately
+  showMessage('Processing', 'Submitting your data...', 'info');
+  
+  try {
+    const totalCallsCPS = document.getElementById('totalCallsCPS').value.trim();
+    const totalCallsEngagedCPS = document.getElementById('totalCallsEngagedCPS').value.trim();
+    
+    if (!totalCallsCPS || !totalCallsEngagedCPS) {
+      showMessage('Error', 'Please fill call count fields', 'error');
+      return;
+    }
+    
+    // Collect student data (allowing empty fields)
+    const studentEntries = [];
+    document.querySelectorAll('.student-entry').forEach((_, index) => {
+      const i = index + 1;
+      studentEntries.push({
+        studentName: document.getElementById(`studentName${i}`)?.value.trim() || '',
+        studentMobile: document.getElementById(`studentMobile${i}`)?.value.trim() || '',
+        universityName: document.getElementById(`universityName${i}`)?.value.trim() || '',
+        visitingDate: document.getElementById(`visitingDate${i}`)?.value || '',
+        registration: document.querySelector(`input[name="registration${i}"]:checked`)?.value || 'Completed',
+        application: document.querySelector(`input[name="application${i}"]:checked`)?.value || 'Completed',
+        admission: document.querySelector(`input[name="admission${i}"]:checked`)?.value || 'Completed'
+      });
+    });
+    
+    // File handling
+    const screenshotFiles = document.getElementById('cpsScreenshots').files;
+    const excelFile = document.getElementById('cpsExcelReport').files[0];
+    
+    if (!excelFile || screenshotFiles.length === 0) {
+      showMessage('Error', 'Both screenshot and Excel file are required', 'error');
+      return;
+    }
+    
+    const files = {
+      screenshots: await Promise.all([...screenshotFiles].map(fileToBase64)),
+      excel: await fileToBase64(excelFile)
+    };
+    
+    // Submit to server
+    google.script.run
+      .withSuccessHandler((response) => {
+        showMessage('Success', `Submitted data for ${response.count} students`, 'success');
+        resetCPSForm();
+      })
+      .withFailureHandler((error) => {
+        showMessage('Error', error.message || 'Submission failed', 'error');
+      })
+      .processCPSForm({
+        userName: userName,
+        totalCalls: totalCallsCPS,
+        totalCallsEngaged: totalCallsEngagedCPS,
+        students: studentEntries
+      }, files);
+  } catch (error) {
+    showMessage('Error', error.message || 'An error occurred', 'error');
+  }
+}
+    
+    function fileToBase64(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve({
+          name: file.name,
+          type: file.type,
+          data: e.target.result.split(',')[1]
+        });
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    // Update DOMContentLoaded to initialize file uploads
+    document.addEventListener('DOMContentLoaded', function() {
+      // [Keep existing initialization]
+      initializeFileUploads();
+    });
+  </script>
+  <script src="Code.gs.js"></script>
+</body>
+</html>
